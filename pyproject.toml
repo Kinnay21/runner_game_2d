@@ -10,6 +10,7 @@ packages = [{include = "pygame_learning"}]
 python = ">=3.10,<3.12"
 pygame = "^2.4.0"
 pyinstaller = "^5.11.0"
+pre-commit = "^3.3.2"
 
 
 [build-system]
