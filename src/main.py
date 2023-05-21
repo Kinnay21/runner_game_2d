@@ -1,23 +1,31 @@
 from typing import Any
 import pygame
+import sys, os
+from pathlib import Path
 from random import randint, choice
 from sys import exit
+
+# check if the program is running from a bundle
+_RUNNING_FROM_BUNDLE = getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")
+# if the program is running from a bundle, adapt the path
+PATH_SAVED_ENV = (Path(sys._MEIPASS)) if _RUNNING_FROM_BUNDLE else Path.cwd()
+
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self) -> None:
         super().__init__()
-        player_walk1 = pygame.image.load('graphics/Player/player_walk_1.png').convert_alpha() # load an image of a player
-        player_walk2 = pygame.image.load('graphics/Player/player_walk_2.png').convert_alpha() # load an image of a player
+        player_walk1 = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/Player/player_walk_1.png')).convert_alpha() # load an image of a player
+        player_walk2 = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/Player/player_walk_2.png')).convert_alpha() # load an image of a player
         self.player_walk = [player_walk1, player_walk2] # create a list of images of a player
         self.player_index = 0 # index of the player image
-        self.player_jump = pygame.image.load('graphics/Player/jump.png').convert_alpha() # load an image of a player
+        self.player_jump = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/Player/jump.png')).convert_alpha() # load an image of a player
 
         self.image = self.player_walk[self.player_index] # set the image of the player
         self.rect = self.image.get_rect(midbottom = (80, 300))
         self.gravity = 0
 
-        self.jump_sound = pygame.mixer.Sound('audio/jump.mp3')
+        self.jump_sound = pygame.mixer.Sound(os.path.join(PATH_SAVED_ENV,'audio/jump.mp3'))
         self.jump_sound.set_volume(0.1)
 
     def player_input(self):
@@ -57,13 +65,13 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
 
         if type == 'fly':
-            fly1 = pygame.image.load('graphics/Fly/Fly1.png').convert_alpha()
-            fly2 = pygame.image.load('graphics/Fly/Fly2.png').convert_alpha()
+            fly1 = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/Fly/Fly1.png')).convert_alpha()
+            fly2 = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/Fly/Fly2.png')).convert_alpha()
             self.frames = [fly1, fly2]
             y_pos = 210
         elif type == 'snail':
-            snail1 = pygame.image.load('graphics/snail/snail1.png').convert_alpha()
-            snail2 = pygame.image.load('graphics/snail/snail2.png').convert_alpha()
+            snail1 = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/snail/snail1.png')).convert_alpha()
+            snail2 = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/snail/snail2.png')).convert_alpha()
             self.frames = [snail1, snail2]
             y_pos = 300
 
@@ -118,7 +126,7 @@ game_active = False # state of the game
 
 start_time = 0 # start time of the game
 score = 0 # score of the game
-bg_music = pygame.mixer.Sound('audio/music.wav') # load the background music
+bg_music = pygame.mixer.Sound(os.path.join(PATH_SAVED_ENV,'audio/music.wav')) # load the background music
 bg_music.set_volume(0.1) # set the volume of the background music
 bg_music.play(loops = -1) # play the background music in a loop
 
@@ -129,7 +137,7 @@ pygame.display.set_caption("My first pygame game") # set the title of the window
 
 clock = pygame.time.Clock() # create a clock object
 
-test_font = pygame.font.Font('font/Pixeltype.ttf', 50) # load a font with a style and a size
+test_font = pygame.font.Font(os.path.join(PATH_SAVED_ENV,'font/Pixeltype.ttf'), 50) # load a font with a style and a size
 
 
 # Groups
@@ -139,11 +147,11 @@ player.add(Player()) # add a sprite to the group
 obstacles_groups = pygame.sprite.Group() # create a group of sprites
 
 
-sky_surf = pygame.image.load('graphics/Sky.png').convert() # load an image
-ground_surf = pygame.image.load('graphics/ground.png').convert() # load an image
+sky_surf = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/Sky.png')).convert() # load an image
+ground_surf = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/ground.png')).convert() # load an image
 
 
-player_stand = pygame.image.load('graphics/Player/player_stand.png').convert_alpha() # load an image of a player
+player_stand = pygame.image.load(os.path.join(PATH_SAVED_ENV,'graphics/Player/player_stand.png')).convert_alpha() # load an image of a player
 player_stand = pygame.transform.rotozoom(player_stand,0,2) # scale the image of the player
 player_stand_rect = player_stand.get_rect(center = (400,200)) # get the rectangle of the player
 
