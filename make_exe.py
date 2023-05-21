@@ -30,22 +30,23 @@ def create_executable():
         [
             "--clean",
             "--name=runner_game_2d",
-            "--onefile", # create only one file
+            "--onefile",  # create only one file
             "-F",
             *[
-                f"--add-data={data[0]}{delimiter}{data[1]}"
-                for data in project_data
-            ], # add data to the executable: the data is the path to the data in the project and the path to the data in the executable
+                f"--add-data={data[0]}{delimiter}{data[1]}" for data in project_data
+            ],  # add data to the executable: the data is the path to the data in the project and the path to the data in the executable
             f"--icon={icon_path}",
-            "--windowed", # no console
+            "--windowed",  # no console
             # "--log-level=DEBUG",
             f"{os.path.join(project_src_path, 'main.py')}",
         ]
     )
 
+
 def normalize_path(src: str, dst: str) -> Tuple[str, str]:
     """return the normalized path for the current OS"""
     return os.path.normpath(src), os.path.normpath(dst)
+
 
 if __name__ == "__main__":
     create_executable()
