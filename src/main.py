@@ -19,14 +19,14 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         # load the images of the player
         player_walk1 = pygame.image.load(
-            os.path.join(PATH_SAVED_ENV, "graphics/Player/player_walk_1.png")
+            os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_1_2.png")
         ).convert_alpha()
         player_walk2 = pygame.image.load(
-            os.path.join(PATH_SAVED_ENV, "graphics/Player/player_walk_2.png")
+            os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_2_2.png")
         ).convert_alpha()
         self.player_walk = [player_walk1, player_walk2]  # create a list of images of a player
         self.player_index = 0  # index of the player image
-        self.player_jump = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Player/jump.png")).convert_alpha()
+        self.player_jump = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_1_2.png")).convert_alpha()
 
         # set the image of the player
         self.image = self.player_walk[self.player_index]
@@ -80,13 +80,18 @@ class Obstacle(pygame.sprite.Sprite):
 
         # load the images of the obstacles
         if type == "fly":
-            fly1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Fly/Fly1.png")).convert_alpha()
-            fly2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Fly/Fly2.png")).convert_alpha()
+            fly1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/stork/stork_1.png")).convert_alpha()
+            fly2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/stork/stork_2.png")).convert_alpha()
             self.frames = [fly1, fly2]
             y_pos = 210
+        elif type == "fly_baby":
+            flyb1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/stork/stork_baby_1.png")).convert_alpha()
+            flyb2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/stork/stork_baby_2.png")).convert_alpha()
+            self.frames = [flyb1, flyb2]
+            y_pos = 210
         elif type == "snail":
-            snail1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/snail/snail1.png")).convert_alpha()
-            snail2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/snail/snail2.png")).convert_alpha()
+            snail1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/hedgehog/hedgehog_1.png")).convert_alpha()
+            snail2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/hedgehog/hedgehog_2.png")).convert_alpha()
             self.frames = [snail1, snail2]
             y_pos = 300
 
@@ -106,12 +111,12 @@ class Obstacle(pygame.sprite.Sprite):
     def update(self):
         """Update the obstacle"""
         self.animation_state()
-        self.rect.x -= 6
+        self.rect.x -= 6*(1+display_score()/100)
         self.destroy()
 
     def destroy(self):
         """Destroy the obstacle if it is out of the screen"""
-        if self.rect.x <= -100:
+        if self.rect.x <= -200:
             self.kill()
 
 
@@ -194,7 +199,7 @@ while True:
             exit()
         if game_active:
             if event.type == obstacle_timer:
-                obstacles_groups.add(Obstacle(choice(["fly", "snail", "snail", "snail"])))
+                obstacles_groups.add(Obstacle(choice(["fly_baby","fly", "snail", "snail", "snail","fly", "snail", "snail", "snail","fly", "snail", "snail", "snail"])))
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
