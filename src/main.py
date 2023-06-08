@@ -18,15 +18,13 @@ class Player(pygame.sprite.Sprite):
     def __init__(self) -> None:
         super().__init__()
         # load the images of the player
-        player_walk1 = pygame.image.load(
-            os.path.join(PATH_SAVED_ENV, "graphics/Player/player_walk_1.png")
-        ).convert_alpha()
-        player_walk2 = pygame.image.load(
-            os.path.join(PATH_SAVED_ENV, "graphics/Player/player_walk_2.png")
-        ).convert_alpha()
+        player_walk1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_1_2.png")).convert_alpha()
+        player_walk2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_2_2.png")).convert_alpha()
         self.player_walk = [player_walk1, player_walk2]  # create a list of images of a player
         self.player_index = 0  # index of the player image
-        self.player_jump = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Player/jump.png")).convert_alpha()
+        self.player_jump = pygame.image.load(
+            os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_1_2.png")
+        ).convert_alpha()
 
         # set the image of the player
         self.image = self.player_walk[self.player_index]
@@ -79,15 +77,24 @@ class Obstacle(pygame.sprite.Sprite):
         super().__init__()
 
         # load the images of the obstacles
-        if type == "fly":
-            fly1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Fly/Fly1.png")).convert_alpha()
-            fly2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Fly/Fly2.png")).convert_alpha()
-            self.frames = [fly1, fly2]
+        if type == "stork":
+            stork1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/stork/stork_1.png")).convert_alpha()
+            stork2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/stork/stork_2.png")).convert_alpha()
+            self.frames = [stork1, stork2]
             y_pos = 210
-        elif type == "snail":
-            snail1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/snail/snail1.png")).convert_alpha()
-            snail2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/snail/snail2.png")).convert_alpha()
-            self.frames = [snail1, snail2]
+        elif type == "stork_baby":
+            storkb1 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/stork/stork_baby_1.png")).convert_alpha()
+            storkb2 = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/stork/stork_baby_2.png")).convert_alpha()
+            self.frames = [storkb1, storkb2]
+            y_pos = 210
+        elif type == "hedgehog":
+            hedgehog1 = pygame.image.load(
+                os.path.join(PATH_SAVED_ENV, "graphics/hedgehog/hedgehog_1.png")
+            ).convert_alpha()
+            hedgehog2 = pygame.image.load(
+                os.path.join(PATH_SAVED_ENV, "graphics/hedgehog/hedgehog_2.png")
+            ).convert_alpha()
+            self.frames = [hedgehog1, hedgehog2]
             y_pos = 300
 
         self.animation_index = 0
@@ -106,13 +113,37 @@ class Obstacle(pygame.sprite.Sprite):
     def update(self):
         """Update the obstacle"""
         self.animation_state()
-        self.rect.x -= 6
+        self.rect.x -= 6 * (1 + display_score() / 100)
         self.destroy()
 
     def destroy(self):
         """Destroy the obstacle if it is out of the screen"""
-        if self.rect.x <= -100:
+        if self.rect.x <= -200:
             self.kill()
+
+
+class SkyBackground(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        sky_image = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/sky.png")).convert()
+
+        height_image = sky_image.get_height()
+        width_image = sky_image.get_width()
+
+        self.image = pygame.Surface((width_image * 2, height_image))
+        self.image.blit(sky_image, (0, 0))
+        self.image.blit(sky_image, (width_image, 0))
+
+        self.rect = self.image.get_rect(topleft=(0, 0))
+        self.pos = pygame.math.Vector2(self.rect.topleft)
+
+    def update(self):
+        """Update the sky background"""
+        self.pos.x -= 100 * (1 + display_score() / 100) / 100
+        if self.rect.centerx < 0:
+            self.pos.x = 0
+        self.rect.x = round(self.pos.x)
+        screen.blit(self.image, self.rect)
 
 
 def display_score() -> float:
@@ -150,8 +181,8 @@ bg_music.play(loops=-1)
 
 # create a window
 screen = pygame.display.set_mode((800, 400))
-pygame.display.set_caption("Pixel Runner")
-pygame_icon = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Player/player_stand.png"))
+pygame.display.set_caption("Bunny Runner")
+pygame_icon = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_0.png"))
 pygame.display.set_icon(pygame_icon)
 
 clock = pygame.time.Clock()
@@ -164,16 +195,19 @@ player.add(Player())
 
 obstacles_groups = pygame.sprite.Group()
 
+sky = pygame.sprite.GroupSingle()
+sky.add(SkyBackground())
+
 # Background
-sky_surf = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Sky.png")).convert()
+# sky_surf = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Sky.png")).convert()
 ground_surf = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/ground.png")).convert()
 
 # Inactive game background
-player_stand = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Player/player_stand.png")).convert_alpha()
-player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
+player_stand = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_0.png")).convert_alpha()
+player_stand = pygame.transform.rotozoom(player_stand, 0, 0.5)
 player_stand_rect = player_stand.get_rect(center=(400, 200))
 
-game_name = test_font.render("Pixel Runner", False, (111, 196, 169))
+game_name = test_font.render("Bunny Runner", False, (111, 196, 169))
 game_name_rect = game_name.get_rect(center=(400, 80))
 
 game_message = test_font.render("Press space to run", False, (255, 196, 169))
@@ -194,7 +228,27 @@ while True:
             exit()
         if game_active:
             if event.type == obstacle_timer:
-                obstacles_groups.add(Obstacle(choice(["fly", "snail", "snail", "snail"])))
+                obstacles_groups.add(
+                    Obstacle(
+                        choice(
+                            [
+                                "stork_baby",
+                                "stork",
+                                "hedgehog",
+                                "hedgehog",
+                                "hedgehog",
+                                "stork",
+                                "hedgehog",
+                                "hedgehog",
+                                "hedgehog",
+                                "stork",
+                                "hedgehog",
+                                "hedgehog",
+                                "hedgehog",
+                            ]
+                        )
+                    )
+                )
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
@@ -202,7 +256,9 @@ while True:
 
     if game_active:
         # draw background
-        screen.blit(sky_surf, (0, 0))
+        # screen.blit(sky_surf, (0, 0))
+        sky.draw(screen)
+        sky.update()
         screen.blit(ground_surf, (0, 300))
 
         score = display_score()
