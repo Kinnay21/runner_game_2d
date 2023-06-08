@@ -119,6 +119,29 @@ class Obstacle(pygame.sprite.Sprite):
         if self.rect.x <= -200:
             self.kill()
 
+class SkyBackground(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        sky_image = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/sky.png")).convert()
+        
+        height_image = sky_image.get_height()
+        width_image = sky_image.get_width()
+
+        self.image = pygame.Surface((width_image*2, height_image))
+        self.image.blit(sky_image, (0, 0))
+        self.image.blit(sky_image, (width_image, 0))
+
+        self.rect = self.image.get_rect(topleft=(0, 0))
+        self.pos = pygame.math.Vector2(self.rect.topleft)
+
+    def update(self):
+        """Update the sky background"""
+        self.pos.x -= 100 * (1+display_score()/100)/100
+        if self.rect.centerx < 0:
+            self.pos.x = 0
+        self.rect.x = round(self.pos.x)
+        screen.blit(self.image, self.rect)
+
 
 def display_score() -> float:
     """Display the score on the screen and return the current score"""
@@ -155,8 +178,8 @@ bg_music.play(loops=-1)
 
 # create a window
 screen = pygame.display.set_mode((800, 400))
-pygame.display.set_caption("Pixel Runner")
-pygame_icon = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Player/player_stand.png"))
+pygame.display.set_caption("Bunny Runner")
+pygame_icon = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_0.png"))
 pygame.display.set_icon(pygame_icon)
 
 clock = pygame.time.Clock()
@@ -169,16 +192,19 @@ player.add(Player())
 
 obstacles_groups = pygame.sprite.Group()
 
+sky = pygame.sprite.GroupSingle()
+sky.add(SkyBackground())
+
 # Background
-sky_surf = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Sky.png")).convert()
+# sky_surf = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Sky.png")).convert()
 ground_surf = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/ground.png")).convert()
 
 # Inactive game background
-player_stand = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/Player/player_stand.png")).convert_alpha()
-player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
+player_stand = pygame.image.load(os.path.join(PATH_SAVED_ENV, "graphics/bunny/bunny_0.png")).convert_alpha()
+player_stand = pygame.transform.rotozoom(player_stand, 0, 0.5)
 player_stand_rect = player_stand.get_rect(center=(400, 200))
 
-game_name = test_font.render("Pixel Runner", False, (111, 196, 169))
+game_name = test_font.render("Bunny Runner", False, (111, 196, 169))
 game_name_rect = game_name.get_rect(center=(400, 80))
 
 game_message = test_font.render("Press space to run", False, (255, 196, 169))
@@ -207,7 +233,9 @@ while True:
 
     if game_active:
         # draw background
-        screen.blit(sky_surf, (0, 0))
+        # screen.blit(sky_surf, (0, 0))
+        sky.draw(screen)
+        sky.update()
         screen.blit(ground_surf, (0, 300))
 
         score = display_score()
