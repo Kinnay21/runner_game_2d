@@ -1,7 +1,7 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.3.0
-  hooks: 
+  hooks:
   -   id: trailing-whitespace
   -   id: end-of-file-fixer
   -   id: check-merge-conflict
@@ -25,4 +25,3 @@ repos:
       - "--max-complexity=18"
       - "--select=B,C,E,F,W,T4,B9"
       - "--ignore=E203,W503,E501"
-
